@@ -7,9 +7,9 @@ Classes
 """
 class ServiceEmprunt:
 
-    def __init__(self, les_emprunts):
+    def __init__(self, les_emprunts,service_litige):
         self.fabrique_emprunts = les_emprunts
-        self.service_litige = ServiceLitige()
+        self.service_litige = service_litige
 
     def emprunter(self, livre, membre):
         if not livre.est_empruntable():
@@ -21,7 +21,7 @@ class ServiceEmprunt:
         return self.fabrique_emprunts.creer_emprunt(livre, membre)
 
     def rendre(self,emprunt):
-        if not membre.est_dans_les_temps():
+        if not emprunt.est_dans_les_temps():
             self.service_litige.signaler(emprunt)
 
         emprunt.cloture()

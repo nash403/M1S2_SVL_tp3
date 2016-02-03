@@ -26,7 +26,7 @@ class TestEmprunterUnLivre(unittest.TestCase):
         membre = mock()
         fabrique_emprunts = mock()
 
-        service_emprunts = ServiceEmprunt(fabrique_emprunts)
+        service_emprunts = ServiceEmprunt(fabrique_emprunts,mock())
         self.assertRaises(LivreNonEmpruntableError,service_emprunts.emprunter,livre, membre)
 
 
@@ -37,7 +37,7 @@ class TestEmprunterUnLivre(unittest.TestCase):
         when(membre).peut_emprunter().thenReturn(False)
         fabrique_emprunts = mock()
 
-        service_emprunts = ServiceEmprunt(fabrique_emprunts)
+        service_emprunts = ServiceEmprunt(fabrique_emprunts,mock())
         self.assertRaises(QuotaAtteintError,service_emprunts.emprunter,livre, membre)
 
     def test_l_emprunt_est_cree(self):
@@ -49,7 +49,7 @@ class TestEmprunterUnLivre(unittest.TestCase):
         fabrique_emprunts = mock()
         when(fabrique_emprunts).creer_emprunt(livre, membre).thenReturn(emprunt)
 
-        service_emprunts = ServiceEmprunt(fabrique_emprunts)
+        service_emprunts = ServiceEmprunt(fabrique_emprunts,mock())
 
         self.assertEqual(service_emprunts.emprunter(livre, membre), emprunt)
 
@@ -58,8 +58,8 @@ class TestRendreUnLivre(unittest.TestCase):
     def test_membre_a_depasse_duree_emprunt_genere_un_signalement(self):
         emprunt = mock()
         fabrique_emprunts = mock()
-        service_emprunts = ServiceEmprunt(fabrique_emprunts)
         service_litige = mock()
+        service_emprunts = ServiceEmprunt(fabrique_emprunts,service_litige)
 
         service_emprunts.rendre(emprunt)
 
@@ -68,7 +68,7 @@ class TestRendreUnLivre(unittest.TestCase):
     def test_emprunt_est_cloture(self):
         emprunt = mock()
         fabrique_emprunts = mock()
-        service_emprunts = ServiceEmprunt(fabrique_emprunts)
+        service_emprunts = ServiceEmprunt(fabrique_emprunts,mock())
 
         service_emprunts.rendre(emprunt)
 
