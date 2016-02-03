@@ -26,36 +26,40 @@ class TestCreerUserALaMain(unittest.TestCase):
         Bdd = mock()
         user  = mock()
         fabrique_user = mock()
+        fabrique_login = mock()
         LOGIN = "log"
         when(fabrique_user).creer_user("nom", "prenom",LOGIN).thenReturn(user)
-        login_manager = LoginManager(fabrique_user, Bdd)
+        login_manager = LoginManager(fabrique_user, fabrique_login, Bdd)
         self.assertEqual(login_manager.create_user_manuel("nom", "prenom", LOGIN), user)
 
     def test_user_existe_deja(self):
         Bdd = mock()
         user  = mock()
         fabrique_user = mock()
+        fabrique_login = mock()
         LOGIN = "log"
         when(fabrique_user).creer_user("nom", "prenom",LOGIN).thenRaise(LoginAlreadyExistsError)
-        login_manager = LoginManager(fabrique_user, Bdd)
+        login_manager = LoginManager(fabrique_user, fabrique_login, Bdd)
         self.assertRaises(LoginAlreadyExistsError, login_manager.create_user_manuel, "nom", "prenom", LOGIN)
 
     def test_login_trop_grand(self):
         Bdd = mock()
         user  = mock()
         fabrique_user = mock()
+        fabrique_login = mock()
         LOGIN = "logloglog"
         when(fabrique_user).creer_user("nom", "prenom",LOGIN).thenRaise(LoginTooLongError)
-        login_manager = LoginManager(fabrique_user, Bdd)
+        login_manager = LoginManager(fabrique_user, fabrique_login, Bdd)
         self.assertRaises(LoginTooLongError, login_manager.create_user_manuel, "nom", "prenom", LOGIN)
 
     def test_login_pas_en_minuscule(self):
         Bdd = mock()
         user  = mock()
         fabrique_user = mock()
+        fabrique_login = mock()
         LOGIN = "logRAkKB"
         when(fabrique_user).creer_user("nom", "prenom",LOGIN).thenRaise(LoginWrongFormatError)
-        login_manager = LoginManager(fabrique_user, Bdd)
+        login_manager = LoginManager(fabrique_user, fabrique_login, Bdd)
         self.assertRaises(LoginWrongFormatError, login_manager.create_user_manuel, "nom", "prenom", LOGIN)
 
 
@@ -92,7 +96,6 @@ class TestCreerUserAuto(unittest.TestCase):
 
         self.assertEqual(login_manager.create_user_auto(nom, prenom).get_login(), "dupont")
 
-
     def test_nom_plus_initiale_prenom(self):
         Bdd = mock()
         user = mock()
@@ -122,7 +125,6 @@ class TestCreerUserAuto(unittest.TestCase):
         when(Bdd).exist("dupont").thenReturn(True)
         when(Bdd).exist("duponta").thenReturn(True)
 
-
         login_manager = LoginManager(fabrique_user, fabrique_login, Bdd)
 
         self.assertRaises(UserCannotBeCreated, login_manager.create_user_auto, nom, prenom)
@@ -134,9 +136,9 @@ class TestCreerLoginAuto(unittest.TestCase):
         nom = "duponchel"
         prenom = "alexandre"
        
-        login_manager = LoginFactory()
+        login_factory = LoginFactory()
 
-        self.assertEqual(login_factory.create_login_with_name(nom, prenom), "duponche")
+        self.assertEqual(login_factory.create_login_with_name(nom), "duponche")
 
 
     def test_creer_login_avec_nom_plus_petit_que_max(self):
@@ -154,12 +156,12 @@ class TestCreerLoginAuto(unittest.TestCase):
 
         login_factory = LoginFactory()
 
-        self.assertEqual(login_manager.create_login_with_name_and_firstname(nom, prenom), "duponta")
+        self.assertEqual(login_factory.create_login_with_name_and_firstname(nom, prenom), "duponta")
 
     def test_creer_login_avec_nom_plus_grand_que_max_et_prenom(self):
         nom = "duponchel"
         prenom = "alexandre"
 
-        login_manager = LoginFactory()
+        login_factory = LoginFactory()
 
-        self.assertEqual(login_manager.create_login_with_name_and_firstname(nom, prenom), "duponcha")
+        self.assertEqual(login_factory.create_login_with_name_and_firstname(nom, prenom), "duponcha")
