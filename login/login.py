@@ -7,8 +7,8 @@ Classes
 """
 
 class LoginManager:
-    """docstring for LoginManager"""
-    def __init__(self, fabrique_user, Bdd):
+    """Classe LoginManager pour creer des utilisateurs manuellement ou automatiquement"""
+    def __init__(self, fabrique_user, fabrique_login, Bdd):
         self.fabrique_user = fabrique_user
 	    self.fabrique_login = fabrique_login
         self.BDD = Bdd
@@ -26,14 +26,14 @@ class LoginManager:
             login = fabrique_login.create_login_with_name_and_firstname(nom, prenom)
             if not self.BDD.exist(login):
                 return self.fabrique_user.creer_user(nom, prenom, login)
-           
+
         raise UserCannotBeCreated
-       
+
 
 
 
 class LoginFactory
-	"""docsstring for LoginFactory"""
+	"""Classe LoginFactory pour creer des logins selon les plan A et B"""
 	def __init(self):
 		pass
 
@@ -45,14 +45,10 @@ class LoginFactory
 
 
 
-	
-class BDD:
 
-    # def exists(self,login):
-    #    pass
+class BDD:
     pass
 
 
 class UserCannotBeCreated(Exception):
     pass:
-
