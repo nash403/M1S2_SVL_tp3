@@ -7,7 +7,8 @@ Classes
 """
 
 class LoginManager:
-    """docstring for LoginManager"""
+
+    """Classe LoginManager pour creer des utilisateurs manuellement ou automatiquement"""
     def __init__(self, fabrique_user, fabrique_login, Bdd):
         self.fabrique_user = fabrique_user
         self.fabrique_login = fabrique_login
@@ -26,41 +27,32 @@ class LoginManager:
             login = self.fabrique_login.create_login_with_name_and_firstname(nom, prenom)
             if not self.BDD.exist(login):
                 return self.fabrique_user.creer_user(nom, prenom, login)
-           
+
         raise UserCannotBeCreated
-       
+
 
 
 
 class LoginFactory:
-	"""docsstring for LoginFactory"""
+	"""Classe LoginFactory pour creer des logins selon les plan A et B"""
 	def __init(self):
 		pass
 
-	def create_login_with_name(self, nom):
+	def create_login_with_name(self,nom):
 		return nom[:8].lower()
 
 	def create_login_with_name_and_firstname(self, nom, prenom):
 		return (nom[:7] + prenom[0]).lower()
 
-
-
-	
-class BDD:
-
-    # def exists(self,login):
-    #    pass
-    pass
-
-
-class UserCannotBeCreated(Exception):
+class LoginWrongFormatError(Exception):
     pass
 
 class LoginTooLongError(Exception):
     pass
 
-class LoginWrongFormatError(Exception):
-    pass
-
 class LoginAlreadyExistsError(Exception):
     pass
+    
+class UserCannotBeCreated(Exception):
+    pass
+

@@ -29,7 +29,9 @@ class TestCreerUserALaMain(unittest.TestCase):
         fabrique_login = mock()
         LOGIN = "log"
         when(fabrique_user).creer_user("nom", "prenom",LOGIN).thenReturn(user)
+
         login_manager = LoginManager(fabrique_user, fabrique_login, Bdd)
+
         self.assertEqual(login_manager.create_user_manuel("nom", "prenom", LOGIN), user)
 
     def test_user_existe_deja(self):
@@ -39,7 +41,9 @@ class TestCreerUserALaMain(unittest.TestCase):
         fabrique_login = mock()
         LOGIN = "log"
         when(fabrique_user).creer_user("nom", "prenom",LOGIN).thenRaise(LoginAlreadyExistsError)
+
         login_manager = LoginManager(fabrique_user, fabrique_login, Bdd)
+
         self.assertRaises(LoginAlreadyExistsError, login_manager.create_user_manuel, "nom", "prenom", LOGIN)
 
     def test_login_trop_grand(self):
@@ -49,7 +53,9 @@ class TestCreerUserALaMain(unittest.TestCase):
         fabrique_login = mock()
         LOGIN = "logloglog"
         when(fabrique_user).creer_user("nom", "prenom",LOGIN).thenRaise(LoginTooLongError)
+
         login_manager = LoginManager(fabrique_user, fabrique_login, Bdd)
+
         self.assertRaises(LoginTooLongError, login_manager.create_user_manuel, "nom", "prenom", LOGIN)
 
     def test_login_pas_en_minuscule(self):
@@ -59,7 +65,9 @@ class TestCreerUserALaMain(unittest.TestCase):
         fabrique_login = mock()
         LOGIN = "logRAkKB"
         when(fabrique_user).creer_user("nom", "prenom",LOGIN).thenRaise(LoginWrongFormatError)
+
         login_manager = LoginManager(fabrique_user, fabrique_login, Bdd)
+
         self.assertRaises(LoginWrongFormatError, login_manager.create_user_manuel, "nom", "prenom", LOGIN)
 
 
@@ -107,11 +115,13 @@ class TestCreerUserAuto(unittest.TestCase):
         when(fabrique_user).creer_user(nom, prenom, "duponta").thenReturn(user)
         when(fabrique_login).create_login_with_name_and_firstname(nom, prenom).thenReturn("duponta")
         when(Bdd).exist("dupont").thenReturn(True)
+        when(Bdd).exist("duponta").thenReturn(False)
 
 
         login_manager = LoginManager(fabrique_user, fabrique_login, Bdd)
 
-        self.assertEqual(login_manager.create_user_auto(nom, prenom).get_login(), "duponta")
+        login_manager.create_user_auto(nom, prenom)
+        verify(fabrique_user).creer_user(nom,prenom,"duponta")
 
     def test_nom_plus_initiale_prenom_existe_donc_erreur(self):
         Bdd = mock()
