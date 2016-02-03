@@ -65,12 +65,14 @@ class TestCreerUserAuto(unittest.TestCase):
         Bdd = mock()
         user = mock()
         fabrique_user = mock()
+        fabrique_login = mock()
         nom = "duponchel"
         prenom = "alexandre"
         when(user).get_login().thenReturn("duponche")
         when(fabrique_user).creer_user(nom, prenom, "duponche").thenReturn(user)
+        when(fabrique_login).create_login_with_name("duponchel").thenReturn("duponche")
 
-        login_manager = LoginManager(fabrique_user, Bdd)
+        login_manager = LoginManager(fabrique_user, fabrique_login, Bdd)
 
         self.assertEqual(login_manager.create_user_auto(nom, prenom).get_login(), "duponche")
 
@@ -79,12 +81,14 @@ class TestCreerUserAuto(unittest.TestCase):
         Bdd = mock()
         user = mock()
         fabrique_user = mock()
+        fabrique_login = mock()
         nom = "dupont"
         prenom = "alexandre"
         when(user).get_login().thenReturn("dupont")
         when(fabrique_user).creer_user(nom, prenom, "dupont").thenReturn(user)
+        when(fabrique_login).create_login_with_name(nom).thenReturn("dupont")
 
-        login_manager = LoginManager(fabrique_user, Bdd)
+        login_manager = LoginManager(fabrique_user, fabrique_login, Bdd)
 
         self.assertEqual(login_manager.create_user_auto(nom, prenom).get_login(), "dupont")
 
@@ -93,29 +97,69 @@ class TestCreerUserAuto(unittest.TestCase):
         Bdd = mock()
         user = mock()
         fabrique_user = mock()
+        fabrique_login = mock()
         nom = "dupont"
         prenom = "alexandre"
         when(user).get_login().thenReturn("duponta")
         when(fabrique_user).creer_user(nom, prenom, "duponta").thenReturn(user)
+        when(fabrique_login).create_login_with_name_and_firstname(nom, prenom).thenReturn("duponta")
         when(Bdd).exist("dupont").thenReturn(True)
 
 
-        login_manager = LoginManager(fabrique_user, Bdd)
+        login_manager = LoginManager(fabrique_user, fabrique_login, Bdd)
 
         self.assertEqual(login_manager.create_user_auto(nom, prenom).get_login(), "duponta")
 
-    def test_nom_plus_initiale_prenom_existe_donc_faix_au_mieux(self):
+    def test_nom_plus_initiale_prenom_existe_donc_erreur(self):
         Bdd = mock()
         user = mock()
         fabrique_user = mock()
+        fabrique_login = mock()
         nom = "dupont"
         prenom = "alexandre"
-        when(user).get_login().thenReturn("dupont1")
-        when(fabrique_user).creer_user(nom, prenom, "dupont1").thenReturn(user)
+        when(fabrique_login).create_login_with_name(nom).thenReturn("dupont")
+        when(fabrique_login).create_login_with_name_and_firstname(nom, prenom).thenReturn("duponta")
         when(Bdd).exist("dupont").thenReturn(True)
         when(Bdd).exist("duponta").thenReturn(True)
 
 
-        login_manager = LoginManager(fabrique_user, Bdd)
+        login_manager = LoginManager(fabrique_user, fabrique_login, Bdd)
 
-        self.assertEqual(login_manager.create_user_auto(nom, prenom).get_login(), "dupont1")
+        self.assertRaises(UserCannotBeCreated, login_manager.create_user_auto, nom, prenom)
+
+
+class TestCreerLoginAuto(unittest.TestCase):
+
+    def test_creer_login_avec_nom_plus_grand_que_max(self):
+        nom = "duponchel"
+        prenom = "alexandre"
+       
+        login_manager = LoginFactory()
+
+        self.assertEqual(login_factory.create_login_with_name(nom, prenom), "duponche")
+
+
+    def test_creer_login_avec_nom_plus_petit_que_max(self):
+        nom = "dupont"
+        prenom = "alexandre"
+
+        login_factory = LoginFactory()
+
+        self.assertEqual(login_factory.create_login_with_name(nom), "dupont")
+
+
+    def test_creer_login_avec_nom_plus_initiale_prenom(self):
+        nom = "dupont"
+        prenom = "alexandre"
+
+        login_factory = LoginFactory()
+
+        self.assertEqual(login_manager.create_login_with_name_and_firstname(nom, prenom), "duponta")
+
+    def test_creer_login_avec_nom_plus_grand_que_max_et_prenom(self):
+        nom = "duponchel"
+        prenom = "alexandre"
+
+        login_manager = LoginFactory()
+
+        self.assertEqual(login_manager.create_login_with_name_and_firstname(nom, prenom), "duponcha")
